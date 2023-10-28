@@ -4,10 +4,10 @@
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="queryData">
         <el-form-item>
-          <el-input v-model="queryData.keyword" placeholder="员工姓名"></el-input>
+          <el-input v-model="queryData.keyword" placeholder="店铺名称"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" v-on:click="getOrgemployee">查询</el-button>
+          <el-button type="primary" v-on:click="getShops">查询</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleAdd">新增</el-button>
@@ -15,44 +15,14 @@
       </el-form>
     </el-col>
 
-<!--    age-->
-<!--    :-->
-<!--    34-->
-<!--    departmentId-->
-<!--    :-->
-<!--    null-->
-<!--    email-->
-<!--    :-->
-<!--    "admin@ronghuanet.com"-->
-<!--    headImage-->
-<!--    :-->
-<!--    "/images/head/avatar.png"-->
-<!--    id-->
-<!--    :-->
-<!--    1-->
-<!--    password-->
-<!--    :-->
-<!--    "$2a$10$VUct.Y1WQ5XiP.GRZQafN.QDQua2wbRCPX3w/0dpCY4Y3svvSfCSm"-->
-<!--    username-->
-<!--    :-->
-<!--    "admin"-->
-
     <!--
       users : tableData
       @selection-change="selsChange": 表格的多选列
       sortable:  排序
-      id
-username
-real_name
-email
-phone
-salt
-password
-age
-sex
-state
-department_id
-logininfo_id
+
+
+
+
 
     -->
     <el-table
@@ -65,37 +35,28 @@ logininfo_id
       </el-table-column>
       <el-table-column type="index" width="60">
       </el-table-column>
-      <el-table-column prop="username" label="员工姓名" width="120" sortable>
-      </el-table-column>
-      <el-table-column prop="password" label="密码" width="120" sortable>
-      </el-table-column>
-      <el-table-column prop="sex" label="性别" width="120" sortable>
+      <el-table-column prop="name" label="店铺名" width="120" sortable>
       </el-table-column>
 
-      <el-table-column prop="realname" label="真实姓名" width="180" sortable>
+      <el-table-column prop="tel" label="电话" width="180" sortable>
       </el-table-column>
-      <el-table-column prop="age" label="年龄" width="180" sortable>
+      <el-table-column prop="registerTime" label="注册时间" width="180" sortable>
       </el-table-column>
-
-      <el-table-column prop="salt" label="盐值" width="180" sortable>
-
-      </el-table-column>
-      <el-table-column prop="id" label="ID" width="180" sortable>
+      <el-table-column prop="address" label="地址" width="180" sortable>
       </el-table-column>
 
-      <el-table-column prop="email" label="邮箱" width="180" sortable>
+      <el-table-column prop="logo" label="logo" width="180" sortable>
       </el-table-column>
-      <el-table-column prop="phone" label="手机号码" width="180" sortable>
 
-      </el-table-column>
-      <el-table-column prop="department.id" label="部门名字" width="180" sortable>
-      </el-table-column>
-      <el-table-column prop="logininfoid" label="登录信息" width="180" sortable>
-
-      </el-table-column>
       <el-table-column prop="state" label="状态" width="180" sortable>
-
+        <template slot-scope="scope">
+          <span v-if="scope.row.state === 1" class="status-pending">待审核</span>
+          <span v-else-if="scope.row.state === 2" class="status-approved">审核通过</span>
+          <span v-else-if="scope.row.state === 3" class="status-success">激活成功</span>
+          <span v-else class="status-rejected">驳回</span>
+        </template>
       </el-table-column>
+
 
 
 
@@ -111,7 +72,7 @@ logininfo_id
     <!--分页条和删除全部-->
     <el-col :span="24" class="toolbar">
       <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-      <el-pagination ref="pagination" layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="queryData.pageSize" :total="pageInfo.total" style="float:right;">
+      <el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="queryData.pageSize" :total="pageInfo.total" style="float:right;">
       </el-pagination>
     </el-col>
 
@@ -120,55 +81,66 @@ logininfo_id
     <!--
       对话框的显式  也是一个 布尔值控制的 但是不能使用 v-model 进行绑定
       :visible.sync 这个属性是控制对话框显式的
+      id
+name
+tel
+registerTime
+state
+address
+logo
     -->
     <el-dialog title="新增/修改" :visible.sync="saveFormVisible" :close-on-click-modal="false">
       <el-form :model="saveForm" label-width="80px" :rules="saveFormRules" ref="saveForm">
-        <el-form-item label="部门名称" prop="name">
+        <el-form-item label="店铺名称" prop="name">
           <el-input v-model="saveForm.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="简介" prop="intro">
-          <el-input v-model="saveForm.intro" auto-complete="off"></el-input>
+
+        <el-form-item label="电话" prop="tel">
+          <el-input v-model="saveForm.tel" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="管理员" prop="manager">
-          <el-select v-model="saveForm.manager" clearable value-key="id" placeholder="请选择">
+
+        <el-form-item label="注册时间" prop="registerTime">
+          <el-input v-model="saveForm.registerTime" auto-complete="off":readonly="true"></el-input>
+        </el-form-item>
+
+            <el-form-item label="address" prop="地址">
+              <el-input v-model="saveForm.address" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item label="logo" prop="logo">
+              <el-input v-model="saveForm.logo" auto-complete="off"></el-input>
+            </el-form-item>
             <!--下拉选项
               :key=""  //唯一标识
               :label 选择之后展示到选择框中的值
               :value 选中之后绑定给模型层的值  如果要绑定对象给模型层 有一个大坑
                  必须要写  value-key="id"
             -->
-            <el-option
-                v-for="item in employees"
-                :key="item.id"
-                :label="item.username"
-                :value="item">
-              <span style="float: left">{{ item.username }}</span>
-              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.phone }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="上级部门">
-          <el-cascader v-model="saveForm.parent"
-                       :options="deptTree"
-                       :props="{
-                           checkStrictly: true,
-                           label:'name',
-                           value:'id'
-							}"
-                       clearable></el-cascader>
-        </el-form-item>
-      </el-form>
-      <el-form>
+
+
+
 <!--        <el-form-item label="状态" prop="state">-->
 <!--          <el-input v-model="saveForm.state" auto-complete="off"></el-input>-->
 <!--        </el-form-item>-->
-        <el-form-item label="状态" prop="state">
-          <el-radio-group v-model="saveForm.state">
-            <el-radio class="radio" :label="1">启用</el-radio>
-            <el-radio class="radio" :label="0">禁用</el-radio>
-          </el-radio-group>
-        </el-form-item>
+<!--        <el-form-item label="状态" prop="state">-->
+<!--          <el-radio-group v-model="saveForm.state">-->
+<!--            <el-radio class="radio" :label="2">启用</el-radio>-->
+<!--            <el-radio class="radio" :label="1">禁用</el-radio>-->
+<!--          </el-radio-group>-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
+
+      <el-form-item label="状态" prop="state">
+        <el-select v-model="saveForm.state">
+          <el-option label="待审核"  value="1"></el-option>
+          <el-option label="审核通过待激活" value="2"></el-option>
+
+          <el-option label="激活成功" value="3"></el-option>
+          <el-option label="驳回" value="4"></el-option>
+        </el-select>
+      </el-form-item>
       </el-form>
+
 
       <!--
       <el-form-item label="性别">
@@ -196,11 +168,7 @@ logininfo_id
 </template>
 
 <script>
-// 下面注释的内容是属于mock的内容我们要请求自己的接口 所以 不需要mock了
-// 	import util from '../../common/js/util'
-// 	//import NProgress from 'nprogress'
-// 	import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '../../api/api';
-//  No 'Access-Control-Allow-Origin
+
 export default {
   data() {
     return {
@@ -218,81 +186,50 @@ export default {
       sels: [],//列表选中列
 
       saveFormVisible:false,
+      // id
+      // name
+      // tel
+      // registerTime
+      // state
+      // address
+      // logo
+
       saveForm:{
         id:null,
         name:"",
-        intro:"",
-        manager:{
-          id:null,
-          username:""
-        },
-        parent:{
-          id:null,
-          name:"",
-          path:"",
-        },
-        state:""
+        tel:"",
+        registerTime:"",
+        state:'待审核',
+        address:"",
+        logo:""
       },
       saveFormRules: {
         name: [
-          { required: true, message: '请输入部门名称', trigger: 'blur' }
+          { required: true, message: '请输入店铺名称', trigger: 'blur' }
         ]
       },
       addFormVisible: false,//新增界面是否显示
       addLoading: false,
 
-      //新增界面数据
-      addForm: {
-        name: '',
-        sex: -1,
-        age: 0,
-        birth: '',
-        addr: ''
-      },
-      employees:[],
-      deptTree:[]
+
+
 
     }
   },
   methods: {
-    //查询部门树
-    getDeptTree(){
-      this.$http.get("/orgEmployee/tree").then(res=>{
-       res= res.data
 
-        if (res.success){
-          this.deptTree=res.data
-          console.log(res);
-        }
-
-
-      }).catch(res=>{
-        this.$message.error("没有查到部门树")
-      })
-    },
-    //查询所有员工
-    getAllEmployee(){
-      this.$http.get("/employee").then(res=>{
-        res=res.data
-        this.employees=res.data
-
-      }).catch(res=>{
-        this.$message.error("查询员工失败")
-      })
-    },
 
     handleCurrentChange(val) {
       this.queryData.currentPage = val;
-      this.getOrgemployee();
+      this.getShops();
     },
     //获取用户列表
-    getOrgemployee() {
+    getShops() {
       // 获取参数 - currentPage pageSize keyword
       // 发起请求
-      this.$http.post("/orgEmployee",this.queryData)
+      this.$http.post("/shop",this.queryData)
           .then(res =>{
             res = res.data
-            console.log(res)
             if (res.success){
 
               this.pageInfo = res.data
@@ -311,7 +248,6 @@ export default {
         this.listLoading = true; // 加载框
         // 发送请求
         this.deletebyId(row.id)
-
       }).catch(() => {
 
       });
@@ -319,16 +255,14 @@ export default {
     // 删除单条方法
     deletebyId(id){
       // 发起请求
-      this.$http.delete("/orgEmployee/"+id)
+      this.$http.delete("/shop/"+id)
           .then(res =>{
             res = res.data
             if (res.success){
               this.$message({ message: '删除成功', type: 'success' });
-              this.listLoading = false; // 加载框666666666
+              this.listLoading = false; // 加载框
               this.queryData.currentPage = 1
-
-
-              this.getOrgemployee()
+              this.getShops()
             }else{
               this.$message.error("网络异常请联系管理员");
             }
@@ -342,23 +276,9 @@ export default {
 
       var assign = Object.assign({}, row);
       this.saveForm = assign;
-      if(!assign.parent){
-        this.saveForm.parent = {name:"",id:null}
-      }
-      if(!assign.manager){
-        this.saveForm.manager = {username:"",id:null}
-      }
-      // 父级部门回显
-      if(this.saveForm.parent){
-        var split = this.saveForm.path.split("/");
-        var parents = []
-        for (let i = 1; i < split.length-1; i++) {
-          parents.push(parseInt(split[i]))
-        }
-        this.saveForm.parent = parents
-      }
-      this.getAllEmployee()
-      this.getDeptTree()
+
+
+
     },
     //显示新增界面
     handleAdd: function () {
@@ -378,8 +298,7 @@ export default {
         },
         state:""
       };
-      this.getAllEmployee()
-      this.getDeptTree()
+
     },
     //编辑
     editSubmit: function () {
@@ -399,7 +318,7 @@ export default {
               });
               this.$refs['editForm'].resetFields();
               this.saveFormVisible = false;
-              this.getOrgemployee();
+              this.getShops();
             });
           });
         }
@@ -430,13 +349,13 @@ export default {
         }
       }
 
-      this.$http.put("/orgEmployee",this.saveForm)
+      this.$http.put("/shop",this.saveForm)
           .then(res =>{
             res = res.data
             if (res.success){
               this.$message({ message: '保存成功', type: 'success' });
               this.queryData.currentPage = 1
-              this.getOrgemployee()
+              this.getShops()
               this.saveFormVisible = false;
               this.addLoading = false
             }else{
@@ -461,21 +380,20 @@ export default {
 
         // 批量删除的方法
         this.batchDelete()
-
       }).catch(() => {
 
       });
     },
     batchDelete(){
       // 发起请求
-      this.$http.patch("/orgEmployee",this.sels)
+      this.$http.patch("/shop",this.sels)
           .then(res =>{
             res = res.data
             if (res.success){
               this.$message({ message: '删除成功', type: 'success' });
               this.listLoading = false; // 加载框
               this.queryData.currentPage = 1
-              this.getOrgemployee()
+              this.getShops()
             }else{
               this.$message.error("网络异常请联系管理员");
             }
@@ -486,12 +404,33 @@ export default {
   },
 
   mounted() {
-    this.getOrgemployee();
+    this.getShops();
   }
 }
 
 </script>
 
 <style scoped>
+/* 样式可以根据需要自行定义 */
+.status-pending {
+  color: orange; /* 待审核状态的颜色 */
+}
+
+.status-approved {
+  color: green; /* 审核通过状态的颜色 */
+}
+
+.status-inactive {
+  color: blue; /* 待激活状态的颜色 */
+}
+
+.status-success {
+  color: lime; /* 激活成功状态的颜色 */
+}
+
+.status-rejected {
+  color: red; /* 驳回状态的颜色 */
+}
+
 
 </style>

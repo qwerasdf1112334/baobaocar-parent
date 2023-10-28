@@ -4,7 +4,7 @@
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="queryData">
         <el-form-item>
-          <el-input v-model="queryData.keyword" placeholder="部门名称"></el-input>
+          <el-input v-model="queryData.keyword" placeholder="角色名称"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" v-on:click="getRoles">查询</el-button>
@@ -507,5 +507,6 @@ export default {
 </script>
 
 <style scoped>
+
 
 </style>

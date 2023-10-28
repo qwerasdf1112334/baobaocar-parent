@@ -16,6 +16,7 @@ import Permission from "./views/auth/Permission";
 import Role from "./views/auth/Role";
 import NotPermission from "./views/403"
 import Excel from "./views/org/ExcelEmployee"
+import Shop from "./views/org/Shop"
 
 
 let routes = [
@@ -51,6 +52,7 @@ let routes = [
         children: [
             { path: '/dept', component: Department, name: '部门管理' },
             { path: '/orgEmployee', component: OrgEmployee, name: '员工管理' },
+            { path: '/shop', component: Shop, name: '店铺管理' },
         ]
     },
     {

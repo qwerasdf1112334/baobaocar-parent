@@ -19,6 +19,16 @@
       users : tableData
       @selection-change="selsChange": 表格的多选列
       sortable:  排序
+
+      id
+sn
+name
+path
+state
+manager_id
+parent_id
+shop_id
+
     -->
     <el-table
         :data="pageInfo.data"
@@ -30,14 +40,14 @@
       </el-table-column>
       <el-table-column type="index" width="60">
       </el-table-column>
-      <el-table-column prop="name" label="部门名称" width="120" sortable>
+      <el-table-column prop="sn" label="SN" width="120" sortable>
       </el-table-column>
 
-      <el-table-column prop="intro" label="介绍" width="180" sortable>
+      <el-table-column prop="name" label="部门名字" width="180" sortable>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180" sortable>
+      <el-table-column prop="path" label="层级" width="180" sortable>
       </el-table-column>
-      <el-table-column prop="updateTime" label="更新时间" width="180" sortable>
+      <el-table-column prop="shop.name" label="店铺名" width="180" sortable>
       </el-table-column>
       <el-table-column prop="manager.username" label="部门主管" width="180" sortable>
       </el-table-column>
@@ -185,7 +195,7 @@ export default {
           name:"",
           path:"",
         },
-        state:""
+        state:1
       },
       saveFormRules: {
         name: [
