@@ -17,6 +17,7 @@ import Role from "./views/auth/Role";
 import NotPermission from "./views/403"
 import Excel from "./views/org/ExcelEmployee"
 import Shop from "./views/org/Shop"
+import ShopRegister from "./views/ShopRegister";
 
 
 let routes = [
@@ -34,6 +35,12 @@ let routes = [
     {
         path: '/login',
         component: Login,
+        name: '',
+        hidden: true
+    },
+    {
+        path: '/shopRegister',
+        component: ShopRegister,
         name: '',
         hidden: true
     },
