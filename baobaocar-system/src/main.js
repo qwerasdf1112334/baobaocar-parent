@@ -81,9 +81,9 @@ const router = new VueRouter({
 // })
 
 
-router.afterEach(transition => {
-NProgress.done();
-});
+// router.afterEach(transition => {
+// NProgress.done();
+// });
 
 new Vue({
   //el: '#app',

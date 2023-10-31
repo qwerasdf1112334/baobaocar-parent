@@ -61,9 +61,10 @@
 
 
 
-      <el-table-column label="操作" width="150">
+      <el-table-column label="操作" width="230">
         <template scope="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button  type="warning" size="small" @click="handleexamine(scope.$index, scope.row)">审核</el-button>
+          <el-button type="primary" size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -164,6 +165,47 @@ logo
         <el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
       </div>
     </el-dialog>
+
+<!--审核弹窗-->
+    <el-dialog title="审核" :visible.sync="shenFormVisible" :close-on-click-modal="false">
+      <el-form :model="saveForm" label-width="80px" :rules="saveFormRules" ref="saveForm">
+        <el-form-item label="店铺名称" prop="name">
+          <el-input v-model="saveForm.name" auto-complete="off" :readonly="true"></el-input>
+        </el-form-item>
+
+        <el-form-item label="电话" prop="tel">
+          <el-input v-model="saveForm.tel" auto-complete="off" :readonly="true"></el-input>
+        </el-form-item>
+
+        <el-form-item label="注册时间" prop="registerTime">
+          <el-input v-model="saveForm.registerTime" auto-complete="off" :readonly="true"></el-input>
+        </el-form-item>
+
+        <el-form-item label="address" prop="地址">
+          <el-input v-model="saveForm.address" auto-complete="off" :readonly="true"></el-input>
+        </el-form-item>
+
+        <el-form-item label="logo" prop="logo">
+          <el-input v-model="saveForm.logo" auto-complete="off" :readonly="true"></el-input>
+        </el-form-item>
+
+        <el-form-item label="状态" prop="state">
+          <el-select v-model="saveForm.state">
+            <el-option label="待审核"  value="1"></el-option>
+            <el-option label="审核通过待激活" value="2"></el-option>
+
+            <el-option label="激活成功" value="3"></el-option>
+            <el-option label="驳回" value="4"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button type="success" @click.native="yesSubmit" :loading="addLoading">通过</el-button>
+        <el-button type="danger" @click.native="noSubmit" :loading="addLoading">驳回</el-button>
+        <el-button @click.native="shenFormVisible = false">取消</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 
@@ -186,6 +228,7 @@ export default {
       sels: [],//列表选中列
 
       saveFormVisible:false,
+
       // id
       // name
       // tel
@@ -193,6 +236,7 @@ export default {
       // state
       // address
       // logo
+      shenFormVisible:false,
 
       saveForm:{
         id:null,
@@ -219,6 +263,7 @@ export default {
   methods: {
 
 
+
     handleCurrentChange(val) {
       this.queryData.currentPage = val;
       this.getShops();
@@ -229,7 +274,8 @@ export default {
       // 发起请求
       this.$http.post("/shop",this.queryData)
           .then(res =>{
-            res = res.data
+            res=res.data
+            console.log(res+"99999999");
             if (res.success){
 
               this.pageInfo = res.data
@@ -299,6 +345,13 @@ export default {
         state:""
       };
 
+    },
+    //审核
+    handleexamine(index, row){
+      this.shenFormVisible = true;
+
+      var assign = Object.assign({}, row);
+      this.saveForm = assign;
     },
     //编辑
     editSubmit: function () {
