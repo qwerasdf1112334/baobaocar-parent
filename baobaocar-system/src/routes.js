@@ -18,6 +18,8 @@ import NotPermission from "./views/403"
 import Excel from "./views/org/ExcelEmployee"
 import Shop from "./views/org/Shop"
 import ShopRegister from "./views/ShopRegister";
+import CarType from "./views/car/carType"
+import ShopReview from "./views/org/ShopReview"
 
 
 let routes = [
@@ -60,6 +62,7 @@ let routes = [
             { path: '/dept', component: Department, name: '部门管理' },
             { path: '/orgEmployee', component: OrgEmployee, name: '员工管理' },
             { path: '/shop', component: Shop, name: '店铺管理' },
+            { path: '/shopReview', component: ShopReview, name: '审核窗口' },
         ]
     },
     {
@@ -71,6 +74,17 @@ let routes = [
             { path: '/permission', component: Permission, name: '权限管理' },
             { path: '/role', component: Role, name: '角色管理' },
             { path: '/excel', component: Excel, name: 'excel导入导出' },
+
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '车辆管理',
+        iconCls: 'el-icon-message',//图标样式class
+        children: [
+            { path: '/carType', component: CarType, name: '车辆类型' },
+
 
         ]
     },
