@@ -45,7 +45,12 @@
       <el-table-column prop="address" label="地址" width="180" sortable>
       </el-table-column>
 
-      <el-table-column prop="logo" label="logo" width="180" sortable>
+<!--      <el-table-column prop="logo" label="logo" width="180" sortable>-->
+<!--      </el-table-column>-->
+      <el-table-column prop="logo" label="logo" width="120" sortable>
+        <template slot-scope="scope">
+          <img :src="scope.row.logo" width="30px" height="30px">
+        </template>
       </el-table-column>
 
       <el-table-column prop="state" label="状态" width="180" sortable>
@@ -111,6 +116,7 @@ logo
             <el-form-item label="logo" prop="logo">
               <el-input v-model="saveForm.logo" auto-complete="off"></el-input>
             </el-form-item>
+
             <!--下拉选项
               :key=""  //唯一标识
               :label 选择之后展示到选择框中的值
@@ -131,15 +137,15 @@ logo
 <!--        </el-form-item>-->
 <!--      </el-form>-->
 
-      <el-form-item label="状态" prop="state">
-        <el-select v-model="saveForm.state">
-          <el-option label="待审核"  value="1"></el-option>
-          <el-option label="审核通过待激活" value="2"></el-option>
+        <el-form-item label="状态" prop="state">
+          <el-select v-model="saveForm.state">
+            <el-option label="待审核"  :value="1"></el-option>
+            <el-option label="审核通过待激活" :value="2"></el-option>
+            <el-option label="激活成功" :value="3"></el-option>
+            <el-option label="驳回" :value="4"></el-option>
+          </el-select>
+        </el-form-item>
 
-          <el-option label="激活成功" value="3"></el-option>
-          <el-option label="驳回" value="4"></el-option>
-        </el-select>
-      </el-form-item>
       </el-form>
 
 
@@ -186,18 +192,23 @@ logo
         </el-form-item>
 
         <el-form-item label="logo" prop="logo">
-          <el-input v-model="saveForm.logo" auto-complete="off" :readonly="true"></el-input>
+          <el-image :src="saveForm.logo" style="width:30%"></el-image>
         </el-form-item>
 
         <el-form-item label="状态" prop="state">
           <el-select v-model="saveForm.state">
-            <el-option label="待审核"  value="1"></el-option>
-            <el-option label="审核通过待激活" value="2"></el-option>
-
-            <el-option label="激活成功" value="3"></el-option>
-            <el-option label="驳回" value="4"></el-option>
+            <el-option label="待审核"  :value="1"></el-option>
+            <el-option label="审核通过待激活" :value="2"></el-option>
+            <el-option label="激活成功" :value="3"></el-option>
+            <el-option label="驳回" :value="4"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="驳回原因">
+          <!--<el-input type="textarea" v-model="carForm.carDetail.info"></el-input>-->
+          <quill-editor v-model="saveForm.msg" :options="quillOptions">
+          </quill-editor>
+        </el-form-item>
+
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -210,10 +221,19 @@ logo
 </template>
 
 <script>
+import { quillEditor } from "vue-quill-editor"; // 在页面中引入富文本编辑框的组件
+import 'quill/dist/quill.core.css';   // 引入样式
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
+import quillConfig from "../../common/js/quill-config.js"
 
 export default {
+  components:{
+    quillEditor   // 如果key和value的名字一样,可以省略 quillEditor:quillEditor
+  },
   data() {
     return {
+      quillOptions:quillConfig,
       queryData: {
         keyword: '',
         pageSize: 10,
@@ -245,7 +265,8 @@ export default {
         registerTime:"",
         state:'待审核',
         address:"",
-        logo:""
+        logo:"",
+        msg:""
       },
       saveFormRules: {
         name: [
@@ -352,6 +373,50 @@ export default {
 
       var assign = Object.assign({}, row);
       this.saveForm = assign;
+
+    },
+    yesSubmit() {
+      this.saveForm.state = '2';
+      this.$confirm('确定通过吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then((res) => {
+        // 发送请求到后端
+        this.$http.post('/shop/shenhe', this.saveForm).then(response => {
+// 请求成功处理逻辑
+          this.shenFormVisible=false
+          this.getShops();
+          console.log(response.data);
+        }).catch(error => {
+// 请求失败处理逻辑
+          console.log(error);
+        });
+      }).catch(() => {
+// 取消操作
+      });
+    },
+
+    noSubmit() {
+      this.saveForm.state = '4';
+      this.$confirm('确定驳回吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then((res) => {
+        // 发送请求到后端
+        this.$http.post('/shop/shenhe', this.saveForm).then(response => {
+// 请求成功处理逻辑
+          this.getShops();
+        this.shenFormVisible=false
+          console.log(response.data);
+        }).catch(error => {
+// 请求失败处理逻辑
+          console.log(error);
+        });
+      }).catch(() => {
+// 取消操作
+      });
     },
     //编辑
     editSubmit: function () {
@@ -459,6 +524,7 @@ export default {
   mounted() {
     this.getShops();
   }
+
 }
 
 </script>

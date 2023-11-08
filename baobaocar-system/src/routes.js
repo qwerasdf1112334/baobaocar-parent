@@ -19,7 +19,8 @@ import Excel from "./views/org/ExcelEmployee"
 import Shop from "./views/org/Shop"
 import ShopRegister from "./views/ShopRegister";
 import CarType from "./views/car/carType"
-import ShopReview from "./views/org/ShopReview"
+//import ShopReview from "./views/org/ShopReview"
+import Car from "./views/car/Car";
 
 
 let routes = [
@@ -62,7 +63,7 @@ let routes = [
             { path: '/dept', component: Department, name: '部门管理' },
             { path: '/orgEmployee', component: OrgEmployee, name: '员工管理' },
             { path: '/shop', component: Shop, name: '店铺管理' },
-            { path: '/shopReview', component: ShopReview, name: '审核窗口' },
+            //{ path: '/shopReview', component: ShopReview, name: '审核窗口' },
         ]
     },
     {
@@ -84,6 +85,7 @@ let routes = [
         iconCls: 'el-icon-message',//图标样式class
         children: [
             { path: '/carType', component: CarType, name: '车辆类型' },
+            { path: '/car', component: Car, name: '车辆维护' },
 
 
         ]

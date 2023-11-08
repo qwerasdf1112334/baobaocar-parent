@@ -13,6 +13,10 @@
 <script type="text/javascript" src="script/eg_top_search.js"></script>
 <script type="text/javascript" src="script/city.js"></script>
 <script type="text/javascript" src="script/snncar.js"></script>
+    <!--引入vue axios-->
+
+
+
 <script type="text/javascript">
 $(function(){
 	$('.navmenu li').hover(function(){
@@ -82,23 +86,23 @@ $(function () {
 <!--搜搜框获取焦点-->
 <script type="text/javascript">
 $(function () {
-$('.sea-ipt-txt').focus(function() { 
+$('.sea-ipt-txt').focus(function() {
 $(this).addClass("on");
-$('.search-btn').addClass("on"); 
-}); 
-$('.sea-ipt-txt').blur(function() { 
+$('.search-btn').addClass("on");
+});
+$('.sea-ipt-txt').blur(function() {
 $(this).removeClass("on");
 $('.search-btn').removeClass("on");
-}); 
+});
 });
 </script>
 <!--下拉导航关闭-->
 <script type="text/javascript">
 $(function () {
- $('.menu-mb i').click(function() { 
+ $('.menu-mb i').click(function() {
    $(".navigation-mb-list").slideDown(300);
- }); 
- $('.navigation-mb-list .list-close-btn').click(function() { 
+ });
+ $('.navigation-mb-list .list-close-btn').click(function() {
    $(".navigation-mb-list").slideUp(300);
  });
 });
@@ -136,8 +140,11 @@ $(function () {
 	   });
 });
 </script>
+    <script src="js/vue/dist/vue.js"></script>
+    <script src="js/vue/dist/vue.min.js"></script>
 </head>
 <body>
+<div id="app">
 <div class="egc-top">
   <div class="nav-cent">
     <div class="top-r"> <a href="#" id="b-regist">注册</a>|<a href="#" id="b-login" class="b-login">登陆</a> </div>
@@ -177,8 +184,8 @@ $(function () {
       <span class="common-bg city-logo"></span> </div>
     <div class="sea">
       <div class="egc-sea-box">
-        <input type="text" class="sea-ipt-txt" placeholder="搜索您想要的车" />
-        <a href="#" class="search-btn">搜索</a> </div>
+        <input type="text" class="sea-ipt-txt"  v-model="queryForm.keyword" placeholder="搜索您想要的车" />
+        <a href="#" class="search-btn"  @click="getDataList">搜索</a> </div>
     </div>
     <div class="hot-phone"> <i></i> <span class="js-change-phone">XXX</span> </div>
   </div>
@@ -204,22 +211,25 @@ $(function () {
     </ul>
     <div class="seas">
       <div class="egc-sea-box">
-        <input type="text" class="sea-ipt-txt" placeholder="搜索您想要的车">
-        <a href="#" class="search-btn">搜索</a> </div>
+        <input type="text" class="sea-ipt-txt"  v-model="queryForm.keyword" placeholder="搜索您想要的车">
+        <a href="#" class="search-btn"  @click="getDataList">搜索</a> </div>
     </div>
   </div>
 </div>
 <div class="clear_fix"></div>
 <!--所在位置-->
 <div class="crumbp"> <a href="#">首页</a> <em>&gt;</em> <span>个人二手车</span> </div>
-<div class="mainbox"> 
+<div class="mainbox">
   <!--搜索条件-->
   <div class="comfilter-bd">
     <div class="filterBox">
       <dl class="fliter-bd clearfix">
         <dt>品牌：</dt>
-        <dd class="clickBrandWidget"> <a class="on" href="#">不限</a> <a  class="" href="#" title="大众二手车"> 大众 </a> <a  class="" href="#" title="奔腾二手车"> 奔腾 </a> <a  class="" href="#" title="现代二手车"> 现代 </a> <a  class="" href="#" title="丰田二手车"> 丰田 </a> <a  class="" href="#" title="奥迪二手车"> 奥迪 </a> <a  class="" href="#" title="日产二手车"> 日产 </a> <a  class="" href="#" title="五菱二手车"> 五菱 </a> <a  class="" href="#" title="福特二手车"> 福特 </a> <a  class="" href="#" title="铃木二手车"> 铃木 </a> <a  class="" href="#" title="马自达二手车"> 马自达 </a> <a  class="" href="#" title="比亚迪二手车"> 比亚迪 </a> <a  class="" href="#" title="本田二手车"> 本田 </a> <a  class="" href="#" title="奇瑞二手车"> 奇瑞 </a> <a  class="" href="#" title="吉利二手车"> 吉利 </a> <a  class="" href="#" title="雪佛兰二手车"> 雪佛兰 </a> <a  class="" href="#" title="东风风行二手车"> 东风风行 </a> <a  class="" href="#" title="起亚二手车"> 起亚 </a> <a  class="" href="#" title="哈弗二手车"> 哈弗 </a> 
-          <!--品牌全部--> 
+        <dd class="clickBrandWidget">
+            <a class="on" href="javascript:void(0)"  @click="queryByBrand(null)">不限</a>
+            <a class="" href="javascript:void(0)" @click="queryByBrand(item.key)" v-for="item in aggs.brandBuckets">{{item.key}}({{item.count}})</a>
+
+          <!--品牌全部-->
           <span class="brand-all z30"> <em data-role="show">全部<i></i></em>
           <div data-role="otherBrand" class="otherbrand" style="display: none;">
             <div class="o-b-box"><span class="arrow"><s></s></span>
@@ -287,8 +297,8 @@ $(function () {
               </ul>
             </div>
           </div>
-          </span> 
-          <!--品牌全部--> 
+          </span>
+          <!--品牌全部-->
         </dd>
       </dl>
       <dl class="fliter-bd clearfix">
@@ -297,7 +307,14 @@ $(function () {
       </dl>
       <dl class="fliter-bd clearfix">
         <dt>价格：</dt>
-        <dd> <a  class="on" href="#">不限</a> <a  class="" href="#" title="3万以下二手车"> 3万以下 </a> <a  class="" href="#" title="5万以下二手车"> 3-5万 </a> <a  class="" href="#" title="7万以下二手车"> 5-7万 </a> <a  class="" href="#" title="9万以下二手车"> 7-9万 </a> <a  class="" href="#" title="12万以下二手车"> 9-12万 </a> <a  class="" href="#" title="16万以下二手车"> 12-16万 </a> <a  class="" href="#" title="20万以下二手车"> 16-20万 </a> <a  class="" href="#" title="20万以上二手车"> 20万以上 </a> <span class="input-box clearfix rangeFilter">
+          <a  class="on" href="#" @click="queryByPrice($event,null,null)">不限</a>
+          <a  class="" href="#" title="3万以下二手车" @click="queryByPrice($event,null,3)"> 3万以下 </a>
+          <a  class="" href="#" title="5万以下二手车" @click="queryByPrice($event,3,5)"> 3-5万 </a>
+          <a  class="" href="#" title="7万以下二手车" @click="queryByPrice($event,5,10)"> 5-10万 </a>
+          <a  class="" href="#" title="9万以下二手车" @click="queryByPrice($event,10,15)"> 10-15万 </a>
+          <a  class="" href="#" title="12万以下二手车" @click="queryByPrice($event,15,20)"> 15-20万 </a>
+          <a  class="" href="#" title="20万以上二手车" @click="queryByPrice($event,20,null)"> 20万以上 </a>
+          <span class="input-box clearfix rangeFilter">
           <label>
             <input type="text" value="" data-default-value="0" size="4" class="js-begin" maxlength="3" id="my_price_b" name="b">
           </label>
@@ -311,7 +328,11 @@ $(function () {
       </dl>
       <dl class="fliter-bd clearfix">
         <dt>车龄：</dt>
-        <dd> <a data-role="filterItemAge" data-value="" class="on" href="#">不限</a> <a  class="" href="#" title="5年以上二手车"> 5年以上 </a> <a class="" href="#" title="5年内二手车"> 5年内 </a> <a  class="" href="#" title="3年内二手车"> 3年内 </a> <a  class="" href="#" title="1年以内二手车"> 1年以内 </a> </dd>
+        <dd>  <a data-role="filterItemAge" data-value="" class="on" href="#"  @click="queryByCarAge($event,null,null)">不限</a>
+            <a  class="" href="#" title="1年以内二手车" @click="queryByCarAge($event,null,1)"> 1年以内 </a>
+            <a  class="" href="#" title="1-3年二手车"  @click="queryByCarAge($event,1,3)"> 1-3年 </a>
+            <a  class="" href="#" title="3-5年二手车"  @click="queryByCarAge($event,3,5)">3-5年 </a>
+            <a class="" href="#" title="5年以上二手车"  @click="queryByCarAge($event,5,null)"> 5年以上 </a> </dd>
       </dl>
       <div class="moreitem clearfix">
         <span>更多：</span>
@@ -439,7 +460,7 @@ $(function () {
 		</dd>
 	</dl>
       </div>
-     
+
     </div>
     <div class="sel-menu clearfix">
       <p class="sel-p">当前筛选&gt;</p>
@@ -451,59 +472,45 @@ $(function () {
     <p class="fr seqtype">共找到<b>3430</b>辆 </p>
     <ul class="sequen">
       <li class="first"><a href="#" >默认排序</a></li>
-      <li> <a href="#" title="" >最新发布 </a> </li>
-      <li> <a href="#" title="">价格<i class="up"></i> </a> </li>
-      <li> <a href="#" title="">车龄<i class="up"></i> </a> </li>
-      <li> <a href="#" title="">里程<i class="up"></i> </a> </li>
+        <li> <a href="javascript:void(0)" title="" data-order="DESC" @click="sortField($event,'onsaletime')">最新发布 </a> </li>
+        <li> <a href="javascript:void(0)" title="" data-order="ASC" @click="sortField($event,'costprice')">价格<i class="up"></i> </a> </li>
+        <li> <a href="javascript:void(0)" title="" data-order="ASC" @click="sortField($event,'reigstertime')">车龄<i class="up"></i> </a> </li>
+        <li> <a href="javascript:void(0)" title="" data-order="ASC" @click="sortField($event,'mileage')">里程<i class="up"></i> </a> </li>
     </ul>
     <ul id="checkArea" class="screen-input tagTypesFilterNew">
-      <li>
-        <input type="checkbox" id="chaozhi">
-        <label for="chaozhi">超值</label>
-      </li>
-      <li>
-        <input type="checkbox" id="jishou">
-        <label for="jishou">急售</label>
-      </li>
-      <li >
-        <input type="checkbox" id="zhunxinche">
-        <label for="zhunxinche">准新车</label>
-      </li>
-      <li >
-        <input type="checkbox" id="keqianquanguo">
-        <label for="keqianquanguo">可迁全国</label>
-      </li>
+        <li>
+            <input type="checkbox" id="chaozhi" data-term="costeffective"  @click="changeFilter($event)">
+            <label for="chaozhi">超值</label>
+        </li>
+        <li>
+            <input type="checkbox" id="jishou" data-term="rushsale" @click="changeFilter($event)">
+            <label for="jishou">急售</label>
+        </li>
+        <li >
+            <input type="checkbox" id="zhunxinche"  data-term="quasinewcar" @click="changeFilter($event)">
+            <label for="zhunxinche">准新车</label>
+        </li>
+        <li >
+            <input type="checkbox" id="keqianquanguo" data-term="transitivecountry"  @click="changeFilter($event)">
+            <label for="keqianquanguo">可迁全国</label>
+        </li>
     </ul>
   </div>
   <ul class="carList">
-    <li>
-      <div class="list-infoBox"> <a title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" target="_blank" class="imgtype" href="infor.html"> <img width="290" height="194" src="images/carimg.jpg" alt="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版"> </a>
-        <p class="infoBox"> <a  title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" href="infor.html" target="_blank" class="info-title">奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版</a> </p>
-        <p class="fc-gray"> <span class="tag-gray">石家庄</span> <span class="">2014年11月上牌</span> <em class="shuxian">|</em> 行驶2.4万公里 </p>
-        <p class="priType-s"> <span> <i class="fc-org priType"> 2.10万 </i> </span> <s>3.40万</s> </p>
-      </div>
-    </li>
-    <li>
-      <div class="list-infoBox"> <a title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" target="_blank" class="imgtype" href="infor.html"> <img width="290" height="194" src="images/carimg.jpg" alt="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版"> </a>
-        <p class="infoBox"> <a  title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" href="infor.html" target="_blank" class="info-title">奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版</a> </p>
-        <p class="fc-gray"> <span class="tag-gray">石家庄</span> <span class="">2014年11月上牌</span> <em class="shuxian">|</em> 行驶2.4万公里 </p>
-        <p class="priType-s"> <span> <i class="fc-org priType"> 2.10万 </i> </span> <s>3.40万</s> </p>
-      </div>
-    </li>
-    <li>
-      <div class="list-infoBox"> <a title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" target="_blank" class="imgtype" href="infor.html"> <img width="290" height="194" src="images/carimg.jpg" alt="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版"> </a>
-        <p class="infoBox"> <a  title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" href="infor.html" target="_blank" class="info-title">奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版</a> </p>
-        <p class="fc-gray"> <span class="tag-gray">石家庄</span> <span class="">2014年11月上牌</span> <em class="shuxian">|</em> 行驶2.4万公里 </p>
-        <p class="priType-s"> <span> <i class="fc-org priType"> 2.10万 </i> </span> <s>3.40万</s> </p>
-      </div>
-    </li>
-    <li>
-      <div class="list-infoBox"> <a title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" target="_blank" class="imgtype" href="infor.html"> <img width="290" height="194" src="images/carimg.jpg" alt="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版"> </a>
-        <p class="infoBox"> <a  title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" href="infor.html" target="_blank" class="info-title">奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版</a> </p>
-        <p class="fc-gray"> <span class="tag-gray">石家庄</span> <span class="">2014年11月上牌</span> <em class="shuxian">|</em> 行驶2.4万公里 </p>
-        <p class="priType-s"> <span> <i class="fc-org priType"> 2.10万 </i> </span> <s>3.40万</s> </p>
-      </div>
-    </li>
+      <li v-for=" carDoc in dataList" @click="carDetail(carDoc.id)">
+          <div class="list-infoBox">
+              <a title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" target="_blank" class="imgtype" href="infor.html"> <img width="290" height="194" :src="carDoc.cover" alt="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版">
+              </a>
+              <p class="infoBox"> <a  title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" href="infor.html" target="_blank" class="info-title" v-html="carDoc.title"></a> </p>
+              <p class="fc-gray"> <span class="tag-gray">石家庄</span> <span class="">{{carDoc.reigstertime}}</span> <em class="shuxian">|</em> 行驶{{carDoc.mileage}}万公里 </p>
+              <p class="priType-s">
+                  <em class="tag-red" v-if="carDoc.rushsale==1">急售</em>
+                  <em class="tag-green" v-if="carDoc.quasinewcar==1">准新车</em>
+                  <em class="tag-yellow" v-if="carDoc.costeffective==1">超值</em>
+                  <span> <i class="fc-org priType"> {{carDoc.costprice*0.0001}}万 </i> </span> <s>{{carDoc.saleprice*0.0001}}万</s> </p>
+          </div>
+      </li>
+      <!--
     <li>
       <div class="list-infoBox"> <a title="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版" target="_blank" class="imgtype" href="infor.html"> <img width="290" height="194" src="images/carimg.jpg" alt="奇瑞QQ3 2012款 QQ3 0.8 手动 梦想版"><i class="sup-yellow"> <em></em> 急降<br>
         200元 </i> </a>
@@ -519,9 +526,24 @@ $(function () {
         <p class="priType-s"> <em class="tag-red">急售</em> <em class="tag-green">准新车</em> <em class="tag-yellow">超值</em> <span> <i class="fc-org priType"> 9.45万 </i> </span> <s>13.00万</s> </p>
       </div>
     </li>
+    -->
   </ul>
 </div>
-<div class="pages"> <a class="on" href="30/p/1.html">1</a><a class="" href="30/p/2.html">2</a><a class="" href="30/p/3.html">3</a><a class="" href="30/p/4.html">4</a><a class="" href="30/p/5.html">5</a> <a href="30/p/2.html">&gt;&gt;</a> <a href="30/p/6.html">6</a> </div>
+<div class="pages">
+    <!--
+        <a class="on" href="30/p/1.html">1</a>
+        <a class="" href="30/p/2.html">2</a>
+        <a class="" href="30/p/3.html">3</a>
+        <a class="" href="30/p/4.html">4</a>
+        <a class="" href="30/p/5.html">5</a>
+        <a href="30/p/2.html">&gt;&gt;</a>
+        <a href="30/p/6.html">6</a>
+    -->
+    <a href="javascript:void(0)" v-if="currentPage!=1" @click="changePage(currentPage-1)"> &lt;&lt; </a>
+    <a v-for=" pagenum in totalPage " :class="currentPage==pagenum?'on':''"
+       href="javascript:void(0)" @click="changePage(pagenum)">{{pagenum}}</a>
+    <a href="javascript:void(0)" v-if="currentPage!=totalPage" @click="changePage(currentPage+1)"> &gt;&gt; </a>
+</div>
 <div class="clear_fix"></div>
 <!--底部-->
 <div class="ftWrap">
@@ -562,8 +584,8 @@ $(function () {
     <div class="cent"> Copyright © 2020,All Rights Reserved 皖ICP备XXX号-1</div>
   </div>
 </div>
-<script type="text/javascript" src="script/3c-menu.js"></script> 
-<script type="text/javascript" src="script/lg_reg.js"></script> 
+<script type="text/javascript" src="script/3c-menu.js"></script>
+<script type="text/javascript" src="script/lg_reg.js"></script>
 <!--会员登录和注册弹出框开始-->
 <div id="popBox">
   <div class="popCont"> <a class="p_closed">关闭</a>
@@ -624,7 +646,8 @@ $(function () {
     </div>
   </div>
 </div>
-<!--会员登录和注册弹出框结束--> 
+<!--会员登录和注册弹出框结束-->
+</div>
 <script>
 $(function(){
 	var t=null,$this,i=0;
@@ -637,9 +660,9 @@ $(function(){
 			$(this).find(".otherbrand").hide();
 		}
 	});
-	
+
 });
-</script> 
+</script>
 <script type="text/javascript">
 $(".hoverWidget").each(function() {
 				$(this).mouseenter(function() {
@@ -678,9 +701,9 @@ $(".hoverWidget").each(function() {
 				<img src="images/foot03/zfew.jpg" width="196" height="205" class="hides" usemap="#taklhtml"/>
 			</a>
 		</li>
-	
-	
-	
+
+
+
 	</ul>
 </div><!--leftsead end-->
 
@@ -694,9 +717,9 @@ $(document).ready(function(){
 		}else{
 			$(this).children("img.hides").show();
 			$(this).children("img.shows").hide();
-			$(this).children("img.hides").animate({marginRight:'0px'},'slow'); 
+			$(this).children("img.hides").animate({marginRight:'0px'},'slow');
 		}
-	},function(){ 
+	},function(){
 		if($(this).prop("className")=="youhui"){
 			$(this).children("img.hides").hide('slow');
 		}else{
@@ -722,6 +745,152 @@ $(function(){
 		$("body").click(function(i){ !$(i.target).parents(".selecter").first().is(s) ? _hide():"";});
 	})
 })
+</script>
+<script type="text/javascript" src="js/vue/dist/vue.min.js"></script>
+<script type="text/javascript" src="js/axios/dist/axios.js"></script>
+<script type="text/javascript" src="js/commons.js"></script>
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            total:0,
+            keyword:"",
+            pageSize:16,
+            currentPage:1,
+            dataList:[],
+            aggs:null,
+            queryForm:{
+                keyword:null,
+                pageSize:16,
+                currentPage:1,
+                priceMin:null,
+                priceMax:null,
+                carAgeMin:null,
+                carAgeMax:null,
+                orderField:null,
+                orderType:null,
+                brand:null
+            }
+        },
+        methods:{
+            carDetail(carId){
+               // location.href="/carDetail.html?carId="+carId;
+                window.open("/detail/"+carId+".html")
+
+
+               // window.open("/carDetail.html?carId=" + carId, "_blank");
+
+            },
+            //根据品牌查询
+            queryByBrand(brand){
+                this.queryForm.brand=brand;
+                this.getDataList();
+            },
+            sortField(event,field){
+                let orderType =$(event.target).attr("data-order");
+                console.debug(orderType)
+                this.queryForm.orderField=field;
+                this.queryForm.orderType=orderType;
+                //把事件源里面的排序方取反
+                if(orderType==='ASC'){
+
+                    $(event.target).attr("data-order","DESC")
+                }else {
+
+                    $(event.target).attr("data-order","ASC")
+                }
+                //查询数据
+                this.getDataList();
+
+            },
+            //超值,急售,准新等快速筛选条件
+            changeFilter(e){
+                let state = $(e.target).prop("checked");
+                let term = $(e.target).data("term");
+                if (state){//添加数据
+                    this.queryForm[term]=1;
+
+                }else {//移出对应的数据
+                    this.queryForm[term]=null;
+                }
+                this.getDataList();
+            },
+            //按照车龄范围查询
+            queryByCarAge(e,min,max){
+                //1.给查询参数里面添加内容
+                if(min){
+                    this.queryForm.carAgeMin=min
+                }
+                if(max){
+                    this.queryForm.carAgeMax=max
+                }
+                // e.target 获取事件源 -->js对象
+                // $() 把源生的js对象转换为jquery对象-->获取所有兄弟元素,并且移除class属性
+                $(e.target).siblings().attr("class","");
+                //1.获取当前标签,给他添加属性
+                $(e.target).attr("class","on");
+
+                //重新获取查询数据
+                this.getDataList();
+            },
+            //按照价格范围查询
+            queryByPrice(e,min,max){
+                //console.debug(e,min,max)
+                //1.给查询参数里面添加内容
+                if(min){
+                    this.queryForm.priceMin=min*10000
+                }
+                if(max){
+                    this.queryForm.priceMax=max*10000
+                }
+                // e.target 获取事件源 -->js对象
+                // $() 把源生的js对象转换为jquery对象-->获取所有兄弟元素,并且移除class属性
+                $(e.target).siblings().attr("class","");
+                //1.获取当前标签,给他添加属性
+                $(e.target).attr("class","on");
+                /**/
+                //重新获取查询数据
+                this.getDataList();
+            },
+            changePage(num){
+                this.currentPage=num;
+                this.getDataList();//改变当前页码以后重新请求分页
+            },
+            // getDataList(){
+            //     let param ={
+            //         pageSize:this.pageSize,
+            //         currentPage:this.currentPage
+            //     }
+            //     this.$http.post("/carDoc",param).then(res=>{
+            //         console.debug(res)
+            //         let {data,success,code,message} =res.data;
+            //         this.total=data.total;
+            //         this.dataList=data.data;
+            //     })
+            // }
+            getDataList(){
+                this.queryForm.pageSize=this.pageSize,
+                    this.queryForm.currentPage=this.currentPage,
+
+                    this.$http.post("/carDoc",this.queryForm).then(res=>{
+                        console.debug(res)
+                        let {data,success,code,message} =res.data;
+                        this.total=data.total;
+                        this.dataList=data.data;
+                        this.aggs=data.aggs;
+                    })
+            }
+        },
+        mounted(){
+            this.getDataList();
+        },
+        computed:{//计算数据
+            totalPage(){
+                //向上取整
+                return Math.ceil(this.total/this.pageSize);
+            }
+        }
+    });
 </script>
 </body>
 </html>

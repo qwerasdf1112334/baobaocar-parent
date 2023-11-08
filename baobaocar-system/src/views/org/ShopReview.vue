@@ -170,7 +170,7 @@ logo
     <el-dialog title="审核" :visible.sync="shenFormVisible" :close-on-click-modal="false">
 
         <div>
-          <el-button >是否通过？</el-button>
+          <el-button ff>是否通过？</el-button>
           <el-dialog
               :visible.sync="dialogVisible"
               title="审核"
